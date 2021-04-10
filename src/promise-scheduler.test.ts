@@ -71,7 +71,6 @@ describe("Promise Scheduler", () => {
   });
 
   it("should resolve fetch promise properly", async () => {
-    // A simple function that download something
     async function downloadValue(): Promise<unknown> {
       console.log("Starting download");
       const response = await fetch(
@@ -84,7 +83,6 @@ describe("Promise Scheduler", () => {
       return result;
     }
 
-    // A few downloads that need to be done
     const factories = [
       () => downloadValue(),
       () => downloadValue(),
