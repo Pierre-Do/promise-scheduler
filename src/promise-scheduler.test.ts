@@ -1,6 +1,7 @@
 import resolveAll from "./resolveAll";
 import expectToHaveBeenCalledWithSequence from "../test-utils/expectToHaveBeenCalledWithSequence";
 import asyncPromiseGenerator from "../test-utils/asyncPromiseGenerator";
+import fetch from "node-fetch";
 
 const promises = [
   () => asyncPromiseGenerator("First", 10),
@@ -67,5 +68,34 @@ describe("Promise Scheduler", () => {
       "resolve Second",
     ];
     expectToHaveBeenCalledWithSequence(traceCallback, sequence);
+  });
+
+  it("should resolve fetch promise properly", async () => {
+    // A simple function that download something
+    async function downloadValue(): Promise<unknown> {
+      console.log("Starting download");
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/todos/1"
+      );
+
+      const result = await response.text();
+      console.log("Download completed");
+
+      return result;
+    }
+
+    // A few downloads that need to be done
+    const factories = [
+      () => downloadValue(),
+      () => downloadValue(),
+      () => downloadValue(),
+      () => downloadValue(),
+      () => downloadValue(),
+      () => downloadValue(),
+      () => downloadValue(),
+    ];
+
+    const result = await resolveAll(factories, { workerCount: 2 });
+    expect(result).toHaveLength(factories.length);
   });
 });
