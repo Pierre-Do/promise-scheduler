@@ -1,4 +1,4 @@
-import resolveAll from "./resolveAll";
+import resolvePromiseWithWorkers from "./resolvePromiseWithWorkers";
 import expectToHaveBeenCalledWithSequence from "../test-utils/expectToHaveBeenCalledWithSequence";
 import asyncPromiseGenerator from "../test-utils/asyncPromiseGenerator";
 import fetch from "node-fetch";
@@ -11,15 +11,17 @@ const promises = [
 
 describe("Promise Scheduler", () => {
   it("should resolve all promises", async () => {
-    expect(await resolveAll(promises)).toEqual(["First", "Second", "Third"]);
-  });
-
-  it("should resolve all promises if the number of workers is lower than the number of promises", async () => {
-    expect(await resolveAll(promises, { workerCount: 1 })).toEqual([
+    expect(await resolvePromiseWithWorkers(promises)).toEqual([
       "First",
       "Second",
       "Third",
     ]);
+  });
+
+  it("should resolve all promises if the number of workers is lower than the number of promises", async () => {
+    expect(
+      await resolvePromiseWithWorkers(promises, { workerCount: 1 })
+    ).toEqual(["First", "Second", "Third"]);
   });
 
   it("should resolve the promises sequentially if the number of worker is 1", async () => {
@@ -30,7 +32,7 @@ describe("Promise Scheduler", () => {
       () => asyncPromiseGenerator("Third", 50, traceCallback),
     ];
 
-    await resolveAll(promisesWithCallback, { workerCount: 1 });
+    await resolvePromiseWithWorkers(promisesWithCallback, { workerCount: 1 });
     const sequence = [
       "start First",
       "resolve First",
@@ -56,7 +58,7 @@ describe("Promise Scheduler", () => {
       () => asyncPromiseGenerator("Forth", 10, traceCallback),
     ];
 
-    await resolveAll(promisesWithCallback, { workerCount: 2 });
+    await resolvePromiseWithWorkers(promisesWithCallback, { workerCount: 2 });
     const sequence = [
       "start First",
       "start Second",
@@ -93,7 +95,9 @@ describe("Promise Scheduler", () => {
       () => downloadValue(),
     ];
 
-    const result = await resolveAll(factories, { workerCount: 2 });
+    const result = await resolvePromiseWithWorkers(factories, {
+      workerCount: 2,
+    });
     expect(result).toHaveLength(factories.length);
   });
 });

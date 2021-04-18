@@ -26,7 +26,7 @@ async function worker<T>(generator: PromiseGeneratorType<T>, result: Array<T>) {
   }
 }
 
-export default async function resolveAll<T>(
+export default async function resolvePromiseWithWorkers<T>(
   promiseFactories: PromiseFactoriesType<T>,
   options: ResolveAllOptions = {}
 ): Promise<Array<T>> {

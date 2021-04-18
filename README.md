@@ -1,12 +1,12 @@
 # Promise Scheduler
 
-The goal of this repo is to implement a very simple `resolveAll` Javascript promise
+The goal of this repo is to implement a very simple `resolvePromiseWithWorkers` Javascript promise
 utility to resolve a bunch of `Promise` not one by one or all at once, but by workers.
 
 ## Example
 
 ```typescript
-import resolveAll from "./src/resolveAll";
+import resolvePromiseWithWorkers from "./src/resolvePromiseWithWorkers";
 
 // A simple function that download something
 async function downloadValue(): Promise<unknown> {
@@ -33,7 +33,7 @@ const factories = [
 ];
 
 // Two workers will download the files
-const result = await resolveAll(factories, { workerCount: 2 });
+const result = await resolvePromiseWithWorkers(factories, { workerCount: 2 });
 ```
 
 ## Acknowledgments
